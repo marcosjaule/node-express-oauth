@@ -26,7 +26,6 @@ it("/approve route verifies the existence of a valid request @authorization-serv
 				true,
 				"The /approve route should return a 200 status for the correct credentials"
 			)
-
 			assert.equal(
 				requests[requestId],
 				null,
@@ -40,6 +39,7 @@ it("/approve route verifies the existence of a valid request @authorization-serv
 			})
 		})
 		.then((res) => {
+
 			assert.equal(
 				res.status,
 				401,

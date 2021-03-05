@@ -2,6 +2,8 @@ const express = require("express")
 const bodyParser = require("body-parser")
 const fs = require("fs")
 const { timeout } = require("./utils")
+const jwt = require('jsonwebtoken')
+const { stringify } = require("querystring")
 
 const config = {
 	port: 9002,
@@ -28,9 +30,25 @@ app.use(timeout)
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
-/*
-Your code here
-*/
+app.get('/user-info', (request, response) => {
+	if (request.headers.authorization) {
+		const token = request.headers.authorization;
+		const slicedToken = token.slice(7, token.length)
+		try {
+			const obj = jwt.verify(slicedToken, config.publicKey);
+			const scopes = obj.scope.split(" ").map(x => x.slice(11, x.length))
+			const y = {}
+			const res = scopes.reverse().map((x) => {
+				y[x] = users[obj.userName][x]
+			})
+			response.status(200).json(y).end();
+		} catch (error) {
+			response.status(401).end();
+		}
+	} else {
+		response.status(401).end()
+	}
+})
 
 const server = app.listen(config.port, "localhost", function () {
 	var host = server.address().address
